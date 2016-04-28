@@ -1,5 +1,10 @@
+using CVCore
 using CVVideoIO
 using Base.Test
 
-# write your own tests here
-@test 1 == 1
+@testset "video capture" begin
+    cap = VideoCapture(0)
+    @test isOpened(cap)
+    release(cap)
+    @test !isOpened(cap)
+end

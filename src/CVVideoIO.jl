@@ -1,6 +1,6 @@
 module CVVideoIO
 
-export VideoCapture, read, release
+export VideoCapture, isOpened, release
 
 using LibOpenCV
 using CVCore
@@ -18,17 +18,24 @@ cxx"""
 #include <opencv2/videoio.hpp>
 """
 
-typealias VideoCapture cxxt"cv::VideoCapture"
+typealias cvVideoCapture cxxt"cv::VideoCapture"
+cvVideoCapture(idx::Int) = icxx"return cv::VideoCapture($idx);"
 
-VideoCapture(idx::Int) = icxx"cv::VideoCapture($idx);"
+typealias VideoCapture cvVideoCapture
 
 function Base.read(cap::VideoCapture)
     img = Mat{UInt8}()
-    ok = icxx"cap->read(img.handle);"
+    ok = icxx"$cap.read($(img.handle));"
     return ok, Mat(img.handle)
 end
 
-release(cap::VideoCapture) = icxx"$cap->release();"
-
+for f in [
+        :grab,
+        :isOpened,
+        :release
+        ]
+    body = Expr(:macrocall, symbol("@icxx_str"), "\$cap.$f();")
+    @eval $f(cap::VideoCapture) = $body
+end
 
 end # module
