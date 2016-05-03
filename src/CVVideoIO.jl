@@ -34,7 +34,7 @@ for f in [
         :isOpened,
         :release
         ]
-    body = Expr(:macrocall, symbol("@icxx_str"), "\$cap.$f();")
+    body = Expr(:macrocall, Symbol("@icxx_str"), "\$cap.$f();")
     @eval $f(cap::VideoCapture) = $body
 end
 
