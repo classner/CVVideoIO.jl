@@ -18,6 +18,8 @@ cxx"""
 #include <opencv2/videoio.hpp>
 """
 
+include("const.jl")
+
 typealias cvVideoCapture cxxt"cv::VideoCapture"
 cvVideoCapture(idx::Int) = icxx"return cv::VideoCapture($idx);"
 
@@ -37,5 +39,7 @@ for f in [
     body = Expr(:macrocall, Symbol("@icxx_str"), "\$cap.$f();")
     @eval $f(cap::VideoCapture) = $body
 end
+
+set(cap::VideoCapture, propId, value) = icxx"$cap.set($propId, $value);"
 
 end # module
