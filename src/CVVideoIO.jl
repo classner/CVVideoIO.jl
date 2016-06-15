@@ -41,5 +41,7 @@ for f in [
 end
 
 set(cap::VideoCapture, propId, value) = icxx"$cap.set($propId, $value);"
+get(cap::VideoCapture, propId) = icxx"$cap.get($propId);"
+grab(cap::VideoCapture) = icxx"$cap.grab();"
 
 end # module
