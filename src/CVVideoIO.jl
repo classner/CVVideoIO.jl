@@ -25,10 +25,14 @@ cvVideoCapture(idx::Int) = icxx"return cv::VideoCapture($idx);"
 
 typealias VideoCapture cvVideoCapture
 
+function Base.read!(cap::VideoCapture, img::Mat{UInt8})
+    icxx"$cap.read($(img.handle));"
+end
+
 function Base.read(cap::VideoCapture)
-    img = Mat{UInt8}()
-    ok = icxx"$cap.read($(img.handle));"
-    return ok, Mat(img.handle)
+    mat = Mat{UInt8}()
+    ok = read!(cap, mat)
+    ok, mat
 end
 
 for f in [
@@ -39,6 +43,8 @@ for f in [
     body = Expr(:macrocall, Symbol("@icxx_str"), "\$cap.$f();")
     @eval $f(cap::VideoCapture) = $body
 end
+
+Base.close(cap::VideoCapture) = release(cap)
 
 set(cap::VideoCapture, propId, value) = icxx"$cap.set($propId, $value);"
 get(cap::VideoCapture, propId) = icxx"$cap.get($propId);"
