@@ -32,7 +32,7 @@ end
 function Base.read(cap::VideoCapture)
     mat = Mat{UInt8}()
     ok = read!(cap, mat)
-    ok, mat
+    ok, Mat(mat)
 end
 
 for f in [
